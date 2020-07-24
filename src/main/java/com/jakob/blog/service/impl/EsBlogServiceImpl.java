@@ -18,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.ResultsExtractor;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
@@ -116,12 +115,7 @@ public class EsBlogServiceImpl implements EsBlogService {
 
         // 聚合
         Aggregations aggregations = elasticsearchTemplate.query(searchQuery,
-                new ResultsExtractor<Aggregations>() {
-                    @Override
-                    public Aggregations extract(SearchResponse response) {
-                        return response.getAggregations();
-                    }
-                });
+                SearchResponse::getAggregations);
 
         StringTerms modelTerms = (StringTerms) aggregations.asMap().get("tags");
 
@@ -145,12 +139,7 @@ public class EsBlogServiceImpl implements EsBlogService {
                         .order(Terms.Order.count(false)).size(12)).build();
         // 聚合
         Aggregations aggregations = elasticsearchTemplate.query(searchQuery,
-                new ResultsExtractor<Aggregations>() {
-                    @Override
-                    public Aggregations extract(SearchResponse response) {
-                        return response.getAggregations();
-                    }
-                });
+                SearchResponse::getAggregations);
 
         StringTerms modelTerms = (StringTerms) aggregations.asMap().get("users");
 
